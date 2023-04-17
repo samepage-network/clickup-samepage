@@ -27,6 +27,23 @@
   },
   "homepage": "https://github.com/samepage-network/clickup-samepage#readme",
   "dependencies": {
-    "samepage": "^0.58.0"
+    "samepage": "^0.62.9"
+  },
+  "samepage": {
+    "install": {
+      "steps": [
+        {
+          "title": "Connect your account",
+          "children": "link",
+          "props": {
+            "href": "https://app.clickup.com/api?client_id=8HH13UF60K4DD8FZ96SZTRUI9FD9F50C&redirect_uri=https://samepage.network/oauth/clickup"
+          }
+        },
+        {
+          "title": "Select Accessible Pages",
+          "children": "image"
+        }
+      ]
+    }
   }
 }
