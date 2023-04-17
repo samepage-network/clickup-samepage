@@ -1,6 +1,6 @@
 {
   "name": "clickup-samepage",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Official ClickUp client into the inter-tool protocol, SamePage.",
   "main": "./dist/index.js",
   "scripts": {
