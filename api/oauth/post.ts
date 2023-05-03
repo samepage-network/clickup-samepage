@@ -7,6 +7,7 @@ import { apiGet } from "samepage/internal/apiClient";
 const logic = async (
   args: z.infer<typeof zOauthRequest>
 ): Promise<z.infer<typeof zOauthResponse>> => {
+  console.log("oauth post", args);
   const { data } = await axios
     .post<{ access_token: string }>(
       `https://api.clickup.com/api/v2/oauth/token`,
@@ -27,7 +28,9 @@ const logic = async (
     )
     .catch((e) =>
       Promise.reject(
-        new Error(`Failed to get access token: ${e.response.data}`)
+        new Error(
+          `Failed to get access token: ${JSON.stringify(e.response.data)}`
+        )
       )
     );
   const { access_token } = data;
@@ -38,7 +41,8 @@ const logic = async (
   });
   return {
     accessToken: access_token,
-    workspace: teams[0].name,
+    workspace: teams[0].id,
+    label: teams[0].name,
   };
 };
 
