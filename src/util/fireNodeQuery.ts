@@ -31,6 +31,26 @@ const hashAssignment = (assignment: Assignment) => {
   return hash.digest("hex");
 };
 
+const joinPrograms = ({
+  program,
+  matches,
+  vars,
+}: {
+  program: Program;
+  matches: Assignment[];
+  vars: string[];
+}) => {
+  return {
+    vars: new Set([...program.vars, ...vars]),
+    assignments: {
+      ...program.assignments,
+      ...Object.fromEntries(
+        matches.map((match) => [hashAssignment(match), match])
+      ),
+    },
+  };
+};
+
 const fireNodeQuery = async (
   args: z.infer<typeof notebookRequestNodeQuerySchema>,
   context: Record<
@@ -39,6 +59,7 @@ const fireNodeQuery = async (
       program: Program;
       source: string;
       target: string;
+      helpers: { isNode: typeof isNode; joinPrograms: typeof joinPrograms };
     }) => Promise<Program>
   >
 ) => {
@@ -51,20 +72,16 @@ const fireNodeQuery = async (
         prev.then(async (program) => {
           if (Object.keys(program.assignments).length === 0 && index > 0)
             return program;
-          const join = (matches: Assignment[], vars: string[]) => {
-            vars.forEach((v) => program.vars.add(v));
-            matches.forEach((match) => {
-              const hash = hashAssignment(match);
-              if (program.assignments[hash]) return;
-              program.assignments[hash] = match;
-            });
-          };
           const handler = context[condition.relation];
           if (!handler) return program;
           return handler({
             program,
             source: condition.source,
             target: condition.target,
+            helpers: {
+              isNode,
+              joinPrograms,
+            },
           });
         }),
       Promise.resolve<Program>({
@@ -74,8 +91,7 @@ const fireNodeQuery = async (
     );
     return assignments;
   };
-  const assignments = getAssignments(args.conditions);
-
+  const assignments = await getAssignments(args.conditions);
   const results = Object.values(assignments).map((res) => {
     const returnNodeValue = res[args.returnNode];
     const returnNode = isNode(returnNodeValue)

@@ -27,7 +27,7 @@
   },
   "homepage": "https://github.com/samepage-network/clickup-samepage#readme",
   "dependencies": {
-    "samepage": "^0.66.6"
+    "samepage": "^0.67.1"
   },
   "samepage": {
     "install": {
